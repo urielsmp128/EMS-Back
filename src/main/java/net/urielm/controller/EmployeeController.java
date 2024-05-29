@@ -2,13 +2,12 @@ package net.urielm.controller;
 
 import lombok.AllArgsConstructor;
 import net.urielm.dto.EmployeeDto;
+import net.urielm.entity.Employee;
+import net.urielm.exceptions.ResourceNotFoundException;
 import net.urielm.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
@@ -22,5 +21,11 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto){
         EmployeeDto savedEmployee = employeeService.createEmployee(employeeDto);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getEmployee/{id}")
+    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable("id") Long employeeId){
+        EmployeeDto employeeDto = employeeService.getEmployeeById(employeeId);
+        return ResponseEntity.ok(employeeDto);
     }
 }
