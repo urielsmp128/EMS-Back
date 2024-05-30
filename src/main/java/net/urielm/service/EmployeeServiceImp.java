@@ -8,6 +8,9 @@ import net.urielm.mapper.EmployeeMapper;
 import net.urielm.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class EmployeeServiceImp implements EmployeeService{
@@ -23,11 +26,35 @@ public class EmployeeServiceImp implements EmployeeService{
 
     @Override
     public EmployeeDto getEmployeeById(Long id) {
-
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + id));
-
         return EmployeeMapper.toEmployeeDto(employee);
     }
+
+    @Override
+    public List<EmployeeDto> getAllEmployees() {
+        List<Employee> employees = employeeRepository.findAll();
+        return employees.stream().map(employee -> EmployeeMapper.toEmployeeDto(employee))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeeDto updateEmloyee(Long id, EmployeeDto employeeDto) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with given id does not exists"));
+        employee.setFirstName(employeeDto.getFirstName() != null ? employeeDto.getFirstName() : employee.getFirstName());
+        employee.setLastName(employeeDto.getLastName() != null ? employeeDto.getLastName() : employee.getLastName());
+        employee.setEmail(employeeDto.getEmail() != null ? employeeDto.getEmail() : employee.getEmail());
+        Employee updatedEmployee = employeeRepository.save(employee);
+        return EmployeeMapper.toEmployeeDto(employee);
+    }
+
+    @Override
+    public void deleteEmployee(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with given id does not exists"));
+        employeeRepository.deleteById(id);
+    }
+
 
 }
